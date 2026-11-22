@@ -1,0 +1,39 @@
+services:
+  mosquitto:                         # el broker MQTT
+    image: eclipse-mosquitto:2
+    restart: unless-stopped          # se reinicia solo si se cae o reinicias la VM
+    ports:
+      - "1883:1883"                  # TEMPORAL (Fase 1). En la Fase 5 se cambia por 8883
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/certs:/mosquitto/certs:ro
+      - mosquitto_data:/mosquitto/data
+
+  nodered:                           # flujos, ingesta y mapa
+    image: nodered/node-red          # cuando todo funcione, fija la versión que se descargó
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:1880:1880"        # solo desde la propia VM → se usa por túnel SSH
+    environment:
+      - TZ=Europe/Madrid
+    volumes:
+      - nodered_data:/data
+    depends_on: [mosquitto, db]
+
+  db:                                # PostgreSQL con PostGIS
+    image: postgis/postgis:17-3.5
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"        # solo desde la propia VM → se usa por túnel SSH
+    environment:
+      POSTGRES_DB: carretera
+      POSTGRES_USER: baches
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d:ro   # scripts .sql que se ejecutan al crear la BD
+
+volumes:                             # "tápers" donde Docker guarda los datos
+  mosquitto_data:
+  nodered_data:
+  pg_data:

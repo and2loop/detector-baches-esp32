@@ -1,0 +1,23 @@
+# Contraseñas y claves: nunca a git
+firmware/src/secrets.h
+.env
+*.pem
+*.key
+servidor/mosquitto/config/passwd
+
+# Ficheros que se generan al compilar el firmware
+firmware/.pio/
+firmware/managed_components/
+firmware/.cache/
+firmware/compile_commands.json
+firmware/sdkconfig.*
+!firmware/sdkconfig.defaults
+firmware/.vscode/
+
+# Datos grabados en el coche (ocupan mucho)
+datos/
+
+# Python
+.venv/
+__pycache__/
+.ipynb_checkpoints/
