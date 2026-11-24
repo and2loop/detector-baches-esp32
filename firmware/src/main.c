@@ -1,184 +1,221 @@
-// Prueba del IMU (MPU-6050 en un módulo GY-521) por I2C.
-// Comprueba que el sensor contesta, lo configura para medir 200 veces por segundo
-// y cada segundo cuenta cuántas muestras llegan y si se ha perdido alguna.
-// A los 10 minutos imprime un resumen con el resultado.
+// Prueba del GPS (módulo GY-GPS6MV2, chip u-blox NEO-6M) por UART.
+// Los primeros segundos enseña las frases NMEA tal cual llegan, para ver que el módulo habla.
+// Después, cada segundo, resume lo que ha entendido: si hay posición (fix), dónde,
+// la calidad de la posición (HDOP), cuántos satélites usa y la hora UTC.
+// Mientras no hay fix, también dice cuántos satélites ve y con qué fuerza le llegan,
+// para saber si el sitio tiene señal suficiente.
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "driver/uart.h"
 #include "driver/gpio.h"
-#include "driver/i2c_master.h"
-#include "esp_log.h"
+#include "esp_timer.h"
 
-#define PIN_SDA     GPIO_NUM_8
-#define PIN_SCL     GPIO_NUM_9
-#define IMU_DIR     0x68    // dirección del MPU-6050 cuando su pin AD0 está sin conectar
-#define MAX_LOTE    32      // como mucho, muestras que se sacan del sensor en cada lectura
-#define DURACION_S  600     // 10 minutos
+#define GPS_UART     UART_NUM_1
+// Pines solo para esta prueba: se han reaprovechado los cables del IMU, que estaban en 8 y 9.
+// En el montaje final el GPS va en 17 y 18, como dice pines.h.
+#define GPS_PIN_RX   GPIO_NUM_8   // el ESP32 recibe aquí: va el TX del GPS
+#define GPS_PIN_TX   GPIO_NUM_9   // el ESP32 envía por aquí: va el RX del GPS (en esta prueba no se le envía nada)
+#define GPS_BAUDIOS  9600     // velocidad de fábrica del NEO-6M
+#define CRUDO_S      5        // segundos en los que se imprimen las frases tal cual llegan
+#define MAX_LINEA    100      // una frase NMEA ocupa como mucho 82 caracteres
 
-static i2c_master_bus_handle_t bus;
-static i2c_master_dev_handle_t imu;
+typedef struct {
+    bool   fix;
+    double lat, lon;
+    float  vel_kmh, hdop;
+    int    satelites;            // los que usa para calcular la posición
+    int    a_la_vista;           // los que dice que hay en el cielo (aunque no los oiga)
+    int    con_senal;            // los que oye de verdad (fuerza mayor que 0)
+    int    fuertes;              // los que oye con 30 dB o más
+    int    mejor_snr;            // el que mejor se oye, en dB
+    char   hora[11], fecha[7];   // "hhmmss.ss" y "ddmmaa"
+    int64_t t_us;                // esp_timer_get_time() cuando llegó la última frase RMC
+} gps_t;
 
-// Si algo impide seguir, lo dice y se queda parado en vez de reiniciarse sin parar
-static void parar(const char *motivo)
+static gps_t g_gps;
+
+#define SNR_BUENA 30   // a partir de aquí la señal da para descargar la órbita del satélite sin cortes
+
+static void gps_iniciar(void)
 {
-    printf("\n*** PRUEBA PARADA: %s ***\n", motivo);
-    while (1) vTaskDelay(pdMS_TO_TICKS(1000));
-}
-
-static void imu_escribir(uint8_t reg, uint8_t valor)
-{
-    uint8_t b[2] = { reg, valor };
-    ESP_ERROR_CHECK(i2c_master_transmit(imu, b, 2, 100));   // 100 ms de tiempo máximo
-}
-
-static void imu_leer(uint8_t reg, uint8_t *dest, size_t n)
-{
-    ESP_ERROR_CHECK(i2c_master_transmit_receive(imu, &reg, 1, dest, n, 100));
-}
-
-// Pregunta a todas las direcciones posibles: así se sabe si el sensor está aunque no conteste en 0x68
-static void escanear_bus(void)
-{
-    esp_log_level_set("i2c.master", ESP_LOG_NONE);   // el driver avisaría por cada dirección vacía
-    printf("Direcciones que contestan en el bus I2C:");
-    int encontradas = 0;
-    for (uint16_t d = 0x08; d < 0x78; d++) {
-        if (i2c_master_probe(bus, d, 50) == ESP_OK) {
-            printf(" 0x%02X", (unsigned)d);
-            encontradas++;
-        }
-    }
-    printf("%s\n", encontradas ? "" : " ninguna");
-    esp_log_level_set("i2c.master", ESP_LOG_WARN);
-}
-
-static void i2c_iniciar(void)
-{
-    i2c_master_bus_config_t bc = {
-        .i2c_port = I2C_NUM_0,
-        .sda_io_num = PIN_SDA,
-        .scl_io_num = PIN_SCL,
-        .clk_source = I2C_CLK_SRC_DEFAULT,
-        .glitch_ignore_cnt = 7,
-        .flags.enable_internal_pullup = true,   // el GY-521 ya trae las suyas; estas no molestan
+    uart_config_t c = {
+        .baud_rate = GPS_BAUDIOS,
+        .data_bits = UART_DATA_8_BITS,
+        .parity    = UART_PARITY_DISABLE,
+        .stop_bits = UART_STOP_BITS_1,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+        .source_clk = UART_SCLK_DEFAULT,
     };
-    ESP_ERROR_CHECK(i2c_new_master_bus(&bc, &bus));
-    escanear_bus();
-    if (i2c_master_probe(bus, IMU_DIR, 100) != ESP_OK)
-        parar("nadie contesta en 0x68: revisa VCC, GND, SDA, SCL y las soldaduras");
-
-    i2c_device_config_t dc = {
-        .dev_addr_length = I2C_ADDR_BIT_LEN_7,
-        .device_address = IMU_DIR,
-        .scl_speed_hz = 400000,                 // modo rápido de I2C: sobra para 200 muestras/s
-    };
-    ESP_ERROR_CHECK(i2c_master_bus_add_device(bus, &dc, &imu));
+    // 2048 bytes de buffer de recepción: unos 2 s de frases, de sobra aunque el printf tarde
+    ESP_ERROR_CHECK(uart_driver_install(GPS_UART, 2048, 0, 0, NULL, 0));
+    ESP_ERROR_CHECK(uart_param_config(GPS_UART, &c));
+    ESP_ERROR_CHECK(uart_set_pin(GPS_UART, GPS_PIN_TX, GPS_PIN_RX,
+                                 UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
 }
 
-static void imu_vaciar_fifo(void)
+// Comprueba la suma de control: XOR de los caracteres entre '$' y '*'
+static bool nmea_ok(const char *s)
 {
-    imu_escribir(0x6A, 0x04);   // borra lo que haya guardado
-    imu_escribir(0x6A, 0x40);   // y vuelve a activar la memoria FIFO
+    const char *p = strchr(s, '$'), *ast = strchr(s, '*');
+    if (!p || !ast) return false;
+    uint8_t x = 0;
+    for (p++; p < ast; p++) x ^= (uint8_t)*p;
+    return x == (uint8_t)strtol(ast + 1, NULL, 16);
 }
 
-static void imu_configurar(void)
+// Parte la línea por comas SIN saltarse los campos vacíos (strtok sí se los salta,
+// y sin fix casi todos los campos vienen vacíos)
+static int nmea_campos(char *s, char *c[], int max)
 {
-    // Reinicio completo del sensor: el botón RST solo reinicia el ESP32, y el sensor
-    // seguía midiendo con la configuración anterior y la FIFO llena
-    imu_escribir(0x6B, 0x80);
-    vTaskDelay(pdMS_TO_TICKS(100));
-    imu_escribir(0x6B, 0x01);   // despertarlo con el reloj del giroscopio, más estable
-    vTaskDelay(pdMS_TO_TICKS(100));
-    imu_escribir(0x1A, 0x02);   // filtro interno a unos 94 Hz: quita vibraciones más rápidas de lo que se mide
-    imu_escribir(0x19, 4);      // 1000 Hz / (1 + 4) = 200 muestras por segundo
-    imu_escribir(0x1C, 0x10);   // rango ±8 g: un bache fuerte no satura la medida (4096 = 1 g)
-    imu_escribir(0x1B, 0x08);   // rango ±500 grados/s (65,5 = 1 grado/s)
-    imu_escribir(0x23, 0x78);   // guardar en la FIFO acelerómetro y giroscopio: 12 bytes por muestra
-    imu_vaciar_fifo();
-    uint8_t s;
-    imu_leer(0x3A, &s, 1);      // leer este registro borra sus avisos: así no cuenta un desborde de antes de empezar
-}
-// El sensor guarda las muestras en su FIFO a ritmo exacto; aquí se recogen todas de golpe.
-// Devuelve cuántas ha leído.
-static int imu_leer_fifo(int16_t m[][6])
-{
-    uint8_t c[2];
-    imu_leer(0x72, c, 2);                       // cuántos bytes hay guardados
-    int n = ((c[0] << 8) | c[1]) / 12;          // muestras completas
-    if (n > MAX_LOTE) n = MAX_LOTE;             // las que sobren se leen en la vuelta siguiente
-    if (n == 0) return 0;
-    uint8_t buf[MAX_LOTE * 12];
-    imu_leer(0x74, buf, n * 12);
-    for (int i = 0; i < n; i++)
-        for (int k = 0; k < 6; k++)             // ax, ay, az, gx, gy, gz; byte alto primero
-            m[i][k] = (int16_t)((buf[i * 12 + 2 * k] << 8) | buf[i * 12 + 2 * k + 1]);
+    int n = 0;
+    c[n++] = s;
+    for (char *p = s; *p && n < max; p++)
+        if (*p == ',' || *p == '*') { *p = '\0'; c[n++] = p + 1; }
     return n;
 }
 
-// Si la FIFO se llena antes de leerla, el sensor tira datos y lo marca en este registro
-static bool imu_fifo_desbordada(void)
+// "3959.6470","N" -> 39.994117   (el formato NMEA es gggmm.mmmm: grados y minutos juntos)
+static double nmea_grados(const char *v, const char *h)
 {
-    uint8_t s;
-    imu_leer(0x3A, &s, 1);
-    return s & 0x10;
+    if (!*v) return NAN;
+    double x = atof(v);
+    int g = (int)(x / 100);
+    double r = g + (x - g * 100) / 60.0;
+    return (*h == 'S' || *h == 'W') ? -r : r;
+}
+
+// Interesan tres frases: RMC (posición, velocidad, hora y fecha), GGA (calidad y satélites usados)
+// y GSV (satélites a la vista y fuerza de cada uno). GSV viene partida en varias frases
+// seguidas, con 4 satélites cada una, así que se va sumando y se guarda al llegar la última.
+// La línea ya tiene que venir con la suma de control comprobada.
+static void nmea_procesar(char *linea, gps_t *g)
+{
+    char *c[24];
+    int n = nmea_campos(linea, c, 24);
+    if (strstr(c[0], "RMC") && n >= 10) {           // $GPRMC o $GNRMC
+        g->fix = (c[2][0] == 'A');
+        g->lat = nmea_grados(c[3], c[4]);
+        g->lon = nmea_grados(c[5], c[6]);
+        g->vel_kmh = atof(c[7]) * 1.852f;           // nudos -> km/h
+        strncpy(g->hora, c[1], sizeof g->hora - 1);
+        strncpy(g->fecha, c[9], sizeof g->fecha - 1);
+        g->t_us = esp_timer_get_time();
+    } else if (strstr(c[0], "GGA") && n >= 9) {     // $GPGGA o $GNGGA
+        g->satelites = atoi(c[7]);
+        g->hdop = atof(c[8]);
+    } else if (strstr(c[0], "GSV") && n >= 4) {     // $GPGSV
+        static int con_senal, fuertes, mejor;
+        int total = atoi(c[1]), num = atoi(c[2]);
+        if (num == 1) con_senal = fuertes = mejor = 0;
+        // Cada satélite son 4 campos: número, elevación, azimut y fuerza; el último campo es la suma de control
+        for (int i = 4; i + 3 < n - 1; i += 4) {
+            int snr = atoi(c[i + 3]);               // vacío = no lo oye
+            if (snr > 0) con_senal++;
+            if (snr >= SNR_BUENA) fuertes++;
+            if (snr > mejor) mejor = snr;
+        }
+        if (num == total) {
+            g->a_la_vista = atoi(c[3]);
+            g->con_senal = con_senal;
+            g->fuertes = fuertes;
+            g->mejor_snr = mejor;
+        }
+    }
+}
+
+// "hhmmss.ss" -> "hh:mm:ss", o "--:--:--" si el GPS todavía no sabe la hora
+static void formatear_hora(const char *h, char *out, size_t tam)
+{
+    if (strlen(h) >= 6) snprintf(out, tam, "%.2s:%.2s:%.2s", h, h + 2, h + 4);
+    else snprintf(out, tam, "--:--:--");
 }
 
 void app_main(void)
 {
     vTaskDelay(pdMS_TO_TICKS(2000));            // da tiempo a abrir el monitor antes de los primeros mensajes
-    printf("\n=== Prueba del IMU ===\n");
-    i2c_iniciar();
+    printf("\n=== Prueba del GPS ===\n");
+    printf("UART1 a %d baudios. Cables: TX del GPS -> GPIO%d, RX del GPS -> GPIO%d\n",
+           GPS_BAUDIOS, GPS_PIN_RX, GPS_PIN_TX);
+    gps_iniciar();
+    printf("Frases tal cual durante %d s:\n", CRUDO_S);
 
-    uint8_t quien;
-    imu_leer(0x75, &quien, 1);
-    printf("WHO_AM_I = 0x%02X %s\n", quien,
-           quien == 0x68 ? "(MPU-6050 original)" : "(otro chip o un clon: sigue si las medidas tienen sentido)");
-    imu_configurar();
-
-    int16_t m[MAX_LOTE][6];
-    int16_t ult[6] = { 0 };
-    int vueltas = 0, en_este_segundo = 0, segundos = 0;
-    int min_s = 100000, max_s = 0;
-    long total_util = 0;                        // muestras sin contar el primer segundo
-    unsigned long desbordes = 0;
-    TickType_t ultimo = xTaskGetTickCount();
+    char linea[MAX_LINEA];
+    int largo = 0;
+    bool larga = false;                         // la línea no cabía: basura o velocidad equivocada
+    uint8_t buf[256];
+    unsigned long bytes = 0, frases_ok = 0, frases_mal = 0;
+    bool superada = false;
+    int64_t inicio = esp_timer_get_time();
+    int64_t siguiente = inicio + 1000000;       // próximo resumen, una vez por segundo
 
     while (1) {
-        // Leer cada 20 ms: la FIFO se llena en unos 0,4 s, así que hay margen de sobra
-        xTaskDelayUntil(&ultimo, pdMS_TO_TICKS(20));
-        if (imu_fifo_desbordada()) {
-            desbordes++;
-            imu_vaciar_fifo();
+        int n = uart_read_bytes(GPS_UART, buf, sizeof buf, pdMS_TO_TICKS(100));
+        if (n > 0) bytes += n;
+
+        // Juntar los bytes en líneas: cada frase acaba en "\r\n"
+        for (int i = 0; i < n; i++) {
+            char ch = (char)buf[i];
+            if (ch == '\r') continue;
+            if (ch != '\n') {
+                if (largo < MAX_LINEA - 1) linea[largo++] = ch;
+                else larga = true;
+                continue;
+            }
+            linea[largo] = '\0';
+            if (largo > 0) {
+                if (esp_timer_get_time() - inicio < CRUDO_S * 1000000LL)
+                    printf("  %s\n", linea);
+                if (!larga && nmea_ok(linea)) {
+                    frases_ok++;
+                    nmea_procesar(linea, &g_gps);
+                } else {
+                    frases_mal++;
+                }
+            }
+            largo = 0;
+            larga = false;
         }
-        int n = imu_leer_fifo(m);
-        if (n > 0) memcpy(ult, m[n - 1], sizeof ult);
-        en_este_segundo += n;
 
-        if (++vueltas < 50) continue;           // 50 vueltas de 20 ms = 1 segundo exacto
-        vueltas = 0;
-        segundos++;
-        if (segundos > 1) {                     // el primer segundo no cuenta: el sensor acaba de arrancar
-            total_util += en_este_segundo;
-            if (en_este_segundo < min_s) min_s = en_este_segundo;
-            if (en_este_segundo > max_s) max_s = en_este_segundo;
+        int64_t ahora = esp_timer_get_time();
+        if (ahora < siguiente) continue;
+        siguiente += 1000000;
+        int t = (int)((ahora - inicio) / 1000000);
+
+        if (bytes == 0) {
+            printf("t=%3d s | no llega nada: revisa que el TX del GPS vaya al GPIO%d, GND y VCC\n",
+                   t, GPS_PIN_RX);
+            continue;
+        }
+        if (frases_ok == 0) {
+            printf("t=%3d s | llegan %lu bytes pero ninguna frase valida: ¿velocidad distinta de %d?\n",
+                   t, bytes, GPS_BAUDIOS);
+            continue;
         }
 
-        float ax = ult[0] / 4096.0f, ay = ult[1] / 4096.0f, az = ult[2] / 4096.0f;
-        float gx = ult[3] / 65.5f,   gy = ult[4] / 65.5f,   gz = ult[5] / 65.5f;
-        float modulo = sqrtf(ax * ax + ay * ay + az * az);
-        printf("t=%3d s | %3d muestras/s | desbordes %lu | a = %+.2f %+.2f %+.2f g |a|=%.2f | giro = %+5.1f %+5.1f %+5.1f dps\n",
-               segundos, en_este_segundo, desbordes, ax, ay, az, modulo, gx, gy, gz);
-        en_este_segundo = 0;
+        char hora[12];
+        formatear_hora(g_gps.hora, hora, sizeof hora);
+        if (!g_gps.fix) {
+            printf("t=%3d s | sin fix | usa %2d | ve %2d, oye %2d, fuertes (>= %d dB) %2d, el mejor %2d dB | hora UTC %s | frases ok %lu, mal %lu\n",
+                   t, g_gps.satelites, g_gps.a_la_vista, g_gps.con_senal, SNR_BUENA, g_gps.fuertes,
+                   g_gps.mejor_snr, hora, frases_ok, frases_mal);
+            continue;
+        }
 
-        if (segundos == DURACION_S) {
-            float media = (float)total_util / (DURACION_S - 1);
-            bool ok = desbordes == 0 && media >= 198.0f && media <= 202.0f;
-            printf("\n=== 10 minutos: media %.1f muestras/s (entre %d y %d cada segundo), %lu desbordes -> %s ===\n\n",
-                   media, min_s, max_s, desbordes, ok ? "PRUEBA SUPERADA" : "NO SUPERADA");
+        printf("t=%3d s | FIX | %.6f, %.6f | %5.1f km/h | HDOP %.2f | satelites %2d | UTC %s %.2s/%.2s/%.2s\n",
+               t, g_gps.lat, g_gps.lon, g_gps.vel_kmh, g_gps.hdop, g_gps.satelites,
+               hora, g_gps.fecha, g_gps.fecha + 2, g_gps.fecha + 4);
+
+        // Lo que se pide para dar el GPS por bueno: posición válida, HDOP < 2 y hora UTC
+        if (!superada && g_gps.hdop > 0 && g_gps.hdop < 2.0f && strlen(g_gps.hora) >= 6) {
+            superada = true;
+            printf("\n=== PRUEBA SUPERADA: fix a los %d s, HDOP %.2f, %d satelites, hora UTC %s"
+                   " (en Espana ahora es una hora mas) ===\n\n", t, g_gps.hdop, g_gps.satelites, hora);
         }
     }
 }

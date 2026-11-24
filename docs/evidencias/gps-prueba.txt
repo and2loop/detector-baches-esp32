@@ -1,0 +1,189 @@
+Prueba del GPS (GY-GPS6MV2, u-blox NEO-6M) - 24/11/2026
+UART1 a 9600 baudios. Prueba con los pines 8 (TX del GPS) y 9 (RX del GPS) porque se reaprovecharon los cables del IMU; en el montaje final va en 17 y 18.
+Primer fix (arranque en frio) junto a una ventana, despues de mas de 15 minutos encendido. Las lineas de antes de t=244 s no se copiaron.
+Hasta t=272 s: fuera, pegado al edificio (5 satelites, HDOP ~4,8). Desde t=273 s: a unos metros del edificio (6-7 satelites, HDOP 1,51). Desde t=363 s: de vuelta dentro, sin senal.
+La velocidad de 2-5 km/h es de ir andando con el portatil.
+
+t=244 s | FIX | 39.993573, -0.068856 |  20.0 km/h | HDOP 4.83 | satelites  5 | UTC 16:46:02 24/11/26
+t=245 s | FIX | 39.993590, -0.068768 |  20.3 km/h | HDOP 4.83 | satelites  5 | UTC 16:46:03 24/11/26
+t=246 s | FIX | 39.993577, -0.068775 |  20.9 km/h | HDOP 4.82 | satelites  5 | UTC 16:46:04 24/11/26
+t=247 s | FIX | 39.993601, -0.068746 |  14.3 km/h | HDOP 4.82 | satelites  5 | UTC 16:46:05 24/11/26
+t=248 s | FIX | 39.993619, -0.068731 |   9.1 km/h | HDOP 4.82 | satelites  5 | UTC 16:46:06 24/11/26
+t=249 s | FIX | 39.993622, -0.068714 |   6.2 km/h | HDOP 4.82 | satelites  5 | UTC 16:46:07 24/11/26
+t=250 s | FIX | 39.993614, -0.068698 |   7.1 km/h | HDOP 4.82 | satelites  5 | UTC 16:46:08 24/11/26
+t=251 s | FIX | 39.993612, -0.068676 |   6.1 km/h | HDOP 4.82 | satelites  5 | UTC 16:46:09 24/11/26
+t=252 s | FIX | 39.993603, -0.068656 |   6.0 km/h | HDOP 4.82 | satelites  5 | UTC 16:46:10 24/11/26
+t=253 s | FIX | 39.993600, -0.068637 |   5.9 km/h | HDOP 4.81 | satelites  5 | UTC 16:46:11 24/11/26
+t=254 s | FIX | 39.993590, -0.068620 |   5.9 km/h | HDOP 4.81 | satelites  5 | UTC 16:46:12 24/11/26
+t=255 s | FIX | 39.993576, -0.068606 |   5.8 km/h | HDOP 4.81 | satelites  5 | UTC 16:46:13 24/11/26
+t=256 s | FIX | 39.993570, -0.068589 |   5.8 km/h | HDOP 4.81 | satelites  5 | UTC 16:46:14 24/11/26
+t=257 s | FIX | 39.993575, -0.068594 |   4.5 km/h | HDOP 4.81 | satelites  5 | UTC 16:46:15 24/11/26
+t=258 s | FIX | 39.993562, -0.068581 |   4.9 km/h | HDOP 4.81 | satelites  5 | UTC 16:46:16 24/11/26
+t=259 s | FIX | 39.993548, -0.068566 |   4.8 km/h | HDOP 4.80 | satelites  5 | UTC 16:46:17 24/11/26
+t=260 s | FIX | 39.993533, -0.068550 |   4.9 km/h | HDOP 4.80 | satelites  5 | UTC 16:46:18 24/11/26
+t=261 s | FIX | 39.993519, -0.068534 |   4.9 km/h | HDOP 4.80 | satelites  5 | UTC 16:46:19 24/11/26
+t=262 s | FIX | 39.993505, -0.068518 |   5.0 km/h | HDOP 4.80 | satelites  5 | UTC 16:46:20 24/11/26
+t=263 s | FIX | 39.993491, -0.068501 |   5.1 km/h | HDOP 4.80 | satelites  5 | UTC 16:46:21 24/11/26
+t=264 s | FIX | 39.993494, -0.068504 |   4.2 km/h | HDOP 4.80 | satelites  5 | UTC 16:46:22 24/11/26
+t=265 s | FIX | 39.993491, -0.068500 |   3.7 km/h | HDOP 4.80 | satelites  5 | UTC 16:46:23 24/11/26
+t=266 s | FIX | 39.993487, -0.068496 |   3.4 km/h | HDOP 4.79 | satelites  5 | UTC 16:46:24 24/11/26
+t=267 s | FIX | 39.993479, -0.068488 |   3.1 km/h | HDOP 4.79 | satelites  5 | UTC 16:46:25 24/11/26
+t=268 s | FIX | 39.993467, -0.068470 |   3.7 km/h | HDOP 4.79 | satelites  5 | UTC 16:46:26 24/11/26
+t=269 s | FIX | 39.993460, -0.068449 |   4.6 km/h | HDOP 4.79 | satelites  5 | UTC 16:46:27 24/11/26
+t=270 s | FIX | 39.993459, -0.068431 |   5.3 km/h | HDOP 4.79 | satelites  5 | UTC 16:46:28 24/11/26
+t=271 s | FIX | 39.993458, -0.068414 |   5.3 km/h | HDOP 4.79 | satelites  5 | UTC 16:46:29 24/11/26
+t=272 s | FIX | 39.993457, -0.068400 |   3.9 km/h | HDOP 4.79 | satelites  5 | UTC 16:46:30 24/11/26
+t=273 s | FIX | 39.993188, -0.068101 |   2.8 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:31 24/11/26
+
+=== PRUEBA SUPERADA: fix a los 273 s, HDOP 1.51, 7 satelites, hora UTC 16:46:31 (en Espana ahora es una hora mas) ===
+
+t=274 s | FIX | 39.993192, -0.068090 |   4.3 km/h | HDOP 1.85 | satelites  6 | UTC 16:46:32 24/11/26
+t=275 s | FIX | 39.993193, -0.068074 |   4.5 km/h | HDOP 1.85 | satelites  7 | UTC 16:46:33 24/11/26
+t=276 s | FIX | 39.993193, -0.068057 |   4.7 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:34 24/11/26
+t=277 s | FIX | 39.993190, -0.068035 |   4.4 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:35 24/11/26
+t=278 s | FIX | 39.993190, -0.068018 |   4.1 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:36 24/11/26
+t=279 s | FIX | 39.993195, -0.068010 |   3.0 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:37 24/11/26
+t=280 s | FIX | 39.993198, -0.068004 |   2.5 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:38 24/11/26
+t=281 s | FIX | 39.993200, -0.067997 |   2.4 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:39 24/11/26
+t=282 s | FIX | 39.993202, -0.067988 |   2.9 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:40 24/11/26
+t=283 s | FIX | 39.993206, -0.067979 |   3.5 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:41 24/11/26
+t=284 s | FIX | 39.993210, -0.067970 |   3.7 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:42 24/11/26
+t=285 s | FIX | 39.993217, -0.067965 |   3.6 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:43 24/11/26
+t=286 s | FIX | 39.993224, -0.067957 |   3.8 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:44 24/11/26
+t=287 s | FIX | 39.993231, -0.067953 |   3.5 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:45 24/11/26
+t=288 s | FIX | 39.993235, -0.067946 |   3.3 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:46 24/11/26
+t=289 s | FIX | 39.993241, -0.067936 |   3.9 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:47 24/11/26
+t=290 s | FIX | 39.993248, -0.067928 |   4.2 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:48 24/11/26
+t=291 s | FIX | 39.993253, -0.067924 |   3.5 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:49 24/11/26
+t=292 s | FIX | 39.993258, -0.067921 |   2.8 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:50 24/11/26
+t=293 s | FIX | 39.993260, -0.067918 |   1.4 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:51 24/11/26
+t=294 s | FIX | 39.993262, -0.067918 |   1.7 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:52 24/11/26
+t=295 s | FIX | 39.993267, -0.067917 |   2.7 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:53 24/11/26
+t=296 s | FIX | 39.993273, -0.067912 |   3.6 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:54 24/11/26
+t=297 s | FIX | 39.993282, -0.067908 |   4.0 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:55 24/11/26
+t=298 s | FIX | 39.993291, -0.067905 |   3.9 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:56 24/11/26
+t=299 s | FIX | 39.993299, -0.067903 |   3.6 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:57 24/11/26
+t=300 s | FIX | 39.993297, -0.067904 |   0.8 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:58 24/11/26
+t=301 s | FIX | 39.993295, -0.067904 |   0.2 km/h | HDOP 1.51 | satelites  7 | UTC 16:46:59 24/11/26
+t=302 s | FIX | 39.993292, -0.067903 |   0.2 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:00 24/11/26
+t=303 s | FIX | 39.993292, -0.067902 |   0.1 km/h | HDOP 2.02 | satelites  5 | UTC 16:47:01 24/11/26
+t=304 s | FIX | 39.993293, -0.067904 |   0.3 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:02 24/11/26
+t=305 s | FIX | 39.993292, -0.067904 |   0.1 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:03 24/11/26
+t=306 s | FIX | 39.993289, -0.067902 |   0.4 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:04 24/11/26
+t=307 s | FIX | 39.993287, -0.067900 |   0.5 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:05 24/11/26
+t=308 s | FIX | 39.993286, -0.067898 |   0.4 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:06 24/11/26
+t=309 s | FIX | 39.993283, -0.067894 |   0.6 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:07 24/11/26
+t=310 s | FIX | 39.993281, -0.067894 |   0.3 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:08 24/11/26
+t=311 s | FIX | 39.993275, -0.067903 |   2.7 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:09 24/11/26
+t=312 s | FIX | 39.993268, -0.067907 |   2.9 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:10 24/11/26
+t=313 s | FIX | 39.993256, -0.067912 |   3.9 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:11 24/11/26
+t=314 s | FIX | 39.993243, -0.067913 |   4.2 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:12 24/11/26
+t=315 s | FIX | 39.993234, -0.067918 |   3.8 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:13 24/11/26
+t=316 s | FIX | 39.993225, -0.067921 |   3.6 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:14 24/11/26
+t=317 s | FIX | 39.993217, -0.067921 |   3.7 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:15 24/11/26
+t=318 s | FIX | 39.993209, -0.067925 |   3.4 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:16 24/11/26
+t=319 s | FIX | 39.993202, -0.067931 |   3.4 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:17 24/11/26
+t=320 s | FIX | 39.993195, -0.067935 |   3.2 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:18 24/11/26
+t=321 s | FIX | 39.993187, -0.067938 |   3.4 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:19 24/11/26
+t=322 s | FIX | 39.993178, -0.067940 |   3.4 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:20 24/11/26
+t=323 s | FIX | 39.993171, -0.067945 |   3.2 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:21 24/11/26
+t=324 s | FIX | 39.993165, -0.067948 |   3.2 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:22 24/11/26
+t=325 s | FIX | 39.993158, -0.067951 |   3.2 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:23 24/11/26
+t=326 s | FIX | 39.993153, -0.067952 |   2.8 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:24 24/11/26
+t=327 s | FIX | 39.993142, -0.067960 |   3.5 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:25 24/11/26
+t=328 s | FIX | 39.993134, -0.067963 |   3.4 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:26 24/11/26
+t=329 s | FIX | 39.993128, -0.067963 |   3.3 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:27 24/11/26
+t=330 s | FIX | 39.993116, -0.067967 |   4.1 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:28 24/11/26
+t=331 s | FIX | 39.993105, -0.067972 |   4.1 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:29 24/11/26
+t=332 s | FIX | 39.993098, -0.067972 |   3.6 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:30 24/11/26
+t=333 s | FIX | 39.993086, -0.067982 |   4.0 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:31 24/11/26
+t=334 s | FIX | 39.993076, -0.067989 |   4.1 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:32 24/11/26
+t=335 s | FIX | 39.993064, -0.067993 |   4.2 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:33 24/11/26
+t=336 s | FIX | 39.993058, -0.067996 |   3.4 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:34 24/11/26
+t=337 s | FIX | 39.993053, -0.067999 |   2.9 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:35 24/11/26
+t=338 s | FIX | 39.993051, -0.068000 |   2.1 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:36 24/11/26
+t=339 s | FIX | 39.993051, -0.068002 |   1.5 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:37 24/11/26
+t=340 s | FIX | 39.993036, -0.068011 |   3.0 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:38 24/11/26
+t=341 s | FIX | 39.993034, -0.068003 |   2.3 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:39 24/11/26
+t=342 s | FIX | 39.993029, -0.067995 |   2.4 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:40 24/11/26
+t=343 s | FIX | 39.993029, -0.067991 |   1.9 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:41 24/11/26
+t=344 s | FIX | 39.993020, -0.067992 |   2.3 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:42 24/11/26
+t=345 s | FIX | 39.993021, -0.067994 |   1.5 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:43 24/11/26
+t=346 s | FIX | 39.993014, -0.067991 |   1.9 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:44 24/11/26
+t=347 s | FIX | 39.993023, -0.067971 |   2.0 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:45 24/11/26
+t=348 s | FIX | 39.993030, -0.067966 |   1.6 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:46 24/11/26
+t=349 s | FIX | 39.993033, -0.067960 |   1.7 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:47 24/11/26
+t=350 s | FIX | 39.993033, -0.067952 |   1.8 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:48 24/11/26
+t=351 s | FIX | 39.993033, -0.067946 |   1.9 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:49 24/11/26
+t=352 s | FIX | 39.993038, -0.067941 |   2.0 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:50 24/11/26
+t=353 s | FIX | 39.993033, -0.067942 |   1.3 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:51 24/11/26
+t=354 s | FIX | 39.993035, -0.067941 |   1.2 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:52 24/11/26
+t=355 s | FIX | 39.993026, -0.067948 |   0.1 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:53 24/11/26
+t=356 s | FIX | 39.993019, -0.067943 |   0.6 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:54 24/11/26
+t=357 s | FIX | 39.993013, -0.067954 |   1.1 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:55 24/11/26
+t=358 s | FIX | 39.993006, -0.067953 |   1.3 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:56 24/11/26
+t=359 s | FIX | 39.993006, -0.067949 |   0.9 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:57 24/11/26
+t=360 s | FIX | 39.993003, -0.067934 |   0.7 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:58 24/11/26
+t=361 s | FIX | 39.992997, -0.067920 |   1.7 km/h | HDOP 1.51 | satelites  6 | UTC 16:47:59 24/11/26
+t=362 s | FIX | 39.992990, -0.067902 |   2.8 km/h | HDOP 1.82 | satelites  5 | UTC 16:48:00 24/11/26
+t=363 s | sin fix | usa  0 | ve 12, oye  4, fuertes (>= 30 dB)  0, el mejor 13 dB | hora UTC 16:48:01 | frases ok 3008, mal 1
+t=364 s | sin fix | usa  0 | ve 12, oye  4, fuertes (>= 30 dB)  0, el mejor  9 dB | hora UTC 16:48:02 | frases ok 3016, mal 1
+t=365 s | sin fix | usa  0 | ve 12, oye  4, fuertes (>= 30 dB)  0, el mejor  8 dB | hora UTC 16:48:03 | frases ok 3024, mal 1
+t=366 s | sin fix | usa  0 | ve 12, oye  4, fuertes (>= 30 dB)  0, el mejor  8 dB | hora UTC 16:48:04 | frases ok 3032, mal 1
+t=367 s | sin fix | usa  0 | ve 12, oye  4, fuertes (>= 30 dB)  0, el mejor  8 dB | hora UTC 16:48:05 | frases ok 3040, mal 1
+t=368 s | sin fix | usa  0 | ve 12, oye  4, fuertes (>= 30 dB)  0, el mejor  8 dB | hora UTC 16:48:06 | frases ok 3048, mal 1
+t=369 s | sin fix | usa  0 | ve 12, oye  2, fuertes (>= 30 dB)  0, el mejor  8 dB | hora UTC 16:48:07 | frases ok 3056, mal 1
+t=370 s | sin fix | usa  0 | ve 12, oye  4, fuertes (>= 30 dB)  0, el mejor  8 dB | hora UTC 16:48:08 | frases ok 3064, mal 1
+t=371 s | sin fix | usa  0 | ve 12, oye  6, fuertes (>= 30 dB)  0, el mejor 20 dB | hora UTC 16:48:09 | frases ok 3072, mal 1
+t=372 s | sin fix | usa  0 | ve 12, oye  5, fuertes (>= 30 dB)  0, el mejor 18 dB | hora UTC 16:48:10 | frases ok 3080, mal 1
+t=373 s | sin fix | usa  0 | ve 12, oye  6, fuertes (>= 30 dB)  0, el mejor 15 dB | hora UTC 16:48:11 | frases ok 3088, mal 1
+t=374 s | sin fix | usa  0 | ve 12, oye  6, fuertes (>= 30 dB)  0, el mejor 13 dB | hora UTC 16:48:12 | frases ok 3096, mal 1
+t=375 s | sin fix | usa  0 | ve 12, oye  5, fuertes (>= 30 dB)  0, el mejor 11 dB | hora UTC 16:48:13 | frases ok 3104, mal 1
+t=376 s | sin fix | usa  0 | ve 12, oye  5, fuertes (>= 30 dB)  0, el mejor 12 dB | hora UTC 16:48:14 | frases ok 3112, mal 1
+t=377 s | sin fix | usa  0 | ve 12, oye  5, fuertes (>= 30 dB)  0, el mejor 14 dB | hora UTC 16:48:15 | frases ok 3120, mal 1
+t=378 s | sin fix | usa  0 | ve 12, oye  8, fuertes (>= 30 dB)  0, el mejor 15 dB | hora UTC 16:48:16 | frases ok 3128, mal 1
+t=379 s | sin fix | usa  0 | ve 12, oye  7, fuertes (>= 30 dB)  0, el mejor 13 dB | hora UTC 16:48:17 | frases ok 3136, mal 1
+t=380 s | sin fix | usa  0 | ve 12, oye  6, fuertes (>= 30 dB)  0, el mejor 10 dB | hora UTC 16:48:18 | frases ok 3144, mal 1
+t=381 s | sin fix | usa  0 | ve 12, oye  4, fuertes (>= 30 dB)  0, el mejor 10 dB | hora UTC 16:48:19 | frases ok 3152, mal 1
+t=382 s | sin fix | usa  0 | ve 12, oye  5, fuertes (>= 30 dB)  0, el mejor  8 dB | hora UTC 16:48:20 | frases ok 3160, mal 1
+t=383 s | sin fix | usa  0 | ve 12, oye  6, fuertes (>= 30 dB)  0, el mejor  8 dB | hora UTC 16:48:21 | frases ok 3168, mal 1
+t=384 s | sin fix | usa  0 | ve 12, oye  5, fuertes (>= 30 dB)  0, el mejor 21 dB | hora UTC 16:48:22 | frases ok 3176, mal 1
+t=385 s | sin fix | usa  0 | ve 12, oye  3, fuertes (>= 30 dB)  0, el mejor  8 dB | hora UTC 16:48:23 | frases ok 3184, mal 1
+t=386 s | sin fix | usa  0 | ve 12, oye  5, fuertes (>= 30 dB)  0, el mejor 18 dB | hora UTC 16:48:24 | frases ok 3192, mal 1
+t=387 s | sin fix | usa  0 | ve 12, oye  3, fuertes (>= 30 dB)  0, el mejor 16 dB | hora UTC 16:48:25 | frases ok 3200, mal 1
+t=388 s | sin fix | usa  0 | ve 12, oye  7, fuertes (>= 30 dB)  0, el mejor 15 dB | hora UTC 16:48:26 | frases ok 3208, mal 1
+t=389 s | sin fix | usa  0 | ve 12, oye  7, fuertes (>= 30 dB)  0, el mejor 12 dB | hora UTC 16:48:27 | frases ok 3216, mal 1
+t=390 s | sin fix | usa  0 | ve 12, oye  6, fuertes (>= 30 dB)  0, el mejor 10 dB | hora UTC 16:48:28 | frases ok 3224, mal 1
+t=391 s | sin fix | usa  0 | ve 12, oye  4, fuertes (>= 30 dB)  0, el mejor 10 dB | hora UTC 16:48:29 | frases ok 3232, mal 1
+t=392 s | sin fix | usa  0 | ve 12, oye  3, fuertes (>= 30 dB)  0, el mejor 10 dB | hora UTC 16:48:30 | frases ok 3240, mal 1
+t=393 s | sin fix | usa  0 | ve 12, oye  3, fuertes (>= 30 dB)  0, el mejor  9 dB | hora UTC 16:48:31 | frases ok 3248, mal 1
+t=394 s | sin fix | usa  0 | ve 12, oye  2, fuertes (>= 30 dB)  0, el mejor  9 dB | hora UTC 16:48:32 | frases ok 3256, mal 1
+t=395 s | sin fix | usa  0 | ve 12, oye  1, fuertes (>= 30 dB)  0, el mejor  9 dB | hora UTC 16:48:33 | frases ok 3264, mal 1
+t=396 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:34 | frases ok 3272, mal 1
+t=397 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:35 | frases ok 3280, mal 1
+t=398 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:36 | frases ok 3288, mal 1
+t=399 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:37 | frases ok 3296, mal 1
+t=400 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:38 | frases ok 3304, mal 1
+t=401 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:39 | frases ok 3312, mal 1
+t=402 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:40 | frases ok 3320, mal 1
+t=403 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:41 | frases ok 3328, mal 1
+t=404 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:42 | frases ok 3336, mal 1
+t=405 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:43 | frases ok 3344, mal 1
+t=406 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:44 | frases ok 3352, mal 1
+t=407 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:45 | frases ok 3360, mal 1
+t=408 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:46 | frases ok 3368, mal 1
+t=409 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:47 | frases ok 3376, mal 1
+t=410 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:48 | frases ok 3384, mal 1
+t=411 s | sin fix | usa  0 | ve 12, oye  1, fuertes (>= 30 dB)  0, el mejor 20 dB | hora UTC 16:48:49 | frases ok 3392, mal 1
+t=412 s | sin fix | usa  0 | ve 12, oye  1, fuertes (>= 30 dB)  0, el mejor 23 dB | hora UTC 16:48:50 | frases ok 3400, mal 1
+t=413 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:51 | frases ok 3408, mal 1
+t=414 s | sin fix | usa  0 | ve 12, oye  1, fuertes (>= 30 dB)  0, el mejor 28 dB | hora UTC 16:48:52 | frases ok 3416, mal 1
+t=415 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:53 | frases ok 3424, mal 1
+t=416 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:54 | frases ok 3432, mal 1
+t=417 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:55 | frases ok 3440, mal 1
+t=418 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:56 | frases ok 3448, mal 1
+t=419 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:57 | frases ok 3456, mal 1
+t=420 s | sin fix | usa  0 | ve 12, oye  0, fuertes (>= 30 dB)  0, el mejor  0 dB | hora UTC 16:48:58 | frases ok 3464, mal 1
+t=421 s | sin fix | usa  0 | ve 12, oye  1, fuertes (>= 30 dB)  0, el mejor 24 dB | hora UTC 16:48:59 | frases ok 3472, mal 1
+t=422 s | sin fix | usa  0 | ve 12, oye  1, fuertes (>= 30 dB)  1, el mejor 30 dB | hora UTC 16:49:00 | frases ok 3480, mal 1
+t=423 s | sin fix | usa  0 | ve 12, oye  2, fuertes (>= 30 dB)  1, el mejor 30 dB | hora UTC 16:49:01 | frases ok 3488, mal 1
